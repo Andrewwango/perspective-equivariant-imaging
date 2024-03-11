@@ -1,6 +1,37 @@
 import torch.nn as nn
 import torch
-from .multispectral import MultispectralUtils
+from . import MultispectralUtils
+
+class LRMS_MSELoss(nn.MSELoss, MultispectralUtils):
+    """MSELoss on the LRMS image in the volume y"""
+    def __init__(self, factor, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.factor = factor
+
+    def forward(self, y_hat, y):
+        return super().forward(
+            self.lrms_from_volume(y_hat, scale_factor=self.factor),
+            self.lrms_from_volume(y, scale_factor=self.factor)
+        )
+    
+class HRMS_MSELoss(nn.MSELoss, MultispectralUtils):
+    """MSELoss on the HRMS image in the volume x"""
+    def forward(self, x_hat, x):
+        return super().forward(
+            self.hrms_from_volume(x_hat),
+            self.hrms_from_volume(x)
+        )
+    
+class LRMS_L1Loss(nn.L1Loss, MultispectralUtils):
+    def __init__(self, factor, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.factor = factor
+        
+    def forward(self, y_hat, y):
+        return super().forward(
+            self.lrms_from_volume(y_hat, scale_factor=self.factor),
+            self.lrms_from_volume(y, scale_factor=self.factor)
+        )
 
 class BaseStructuralLoss(nn.Module, MultispectralUtils):
     """Abstract class for structural losses in pansharpening. Supports spectral response function (SRF)

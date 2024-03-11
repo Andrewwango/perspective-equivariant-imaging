@@ -2,6 +2,8 @@ import torch
 from deepinv.utils import get_freer_gpu
 
 def get_device():
+    """Get CUDA device is available else cpu
+    """
     return get_freer_gpu() if torch.cuda.is_available() else "cpu"
 
 def make_optimizer_scheduler(model: torch.nn.Module, lr_init: float = 1e-3) -> tuple:

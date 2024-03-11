@@ -1,38 +1,19 @@
-import numpy as np
 import torch
-import deepinv as dinv
-from torchvision.datasets.folder import has_file_allowed_extension
-from torchvision import transforms
 from torchvision.datasets import ImageFolder
+import deepinv as dinv
+from .spacenet import spacenet_transform, spacenet_loader, spacenet_is_valid_file
 
 
-# TODO instructions for setting up your own dataset (create folder in data/ with same structure, reimplement functions from spacenet.py)
+def make_dataloaders(dataset_name: str, physics: dinv.physics.Physics, device="cpu") -> tuple:
+    """Create torch train and test dataloaders for pansharpening inputs from raw images.
+    Currently implemented for loading SpaceNet-4 images. To implement for a different dataset,
+    simply add the data in the same folder structure and reimplement the functions in spacenet.py. 
 
-#spacenet specific code
-#TODO docstrings
-def spacenet_loader(fn):
-    f = np.load(fn)
-    return [f["hrms"], f["pan"]]
-
-def spacenet_is_valid_file():
-    return lambda f: has_file_allowed_extension(f, (".npz"))
-
-def spacenet_transform():
-    transform_hrms = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Resize(1024, interpolation=transforms.InterpolationMode.BICUBIC),
-    ])
-    transform_pan = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Resize(1024, interpolation=transforms.InterpolationMode.BICUBIC),
-    ])
-    return lambda f: torch.cat([
-        transform_hrms(f[0]),
-        transform_pan(f[1])
-    ], dim=0)
-
-def make_dataloaders(dataset_name: str, physics: dinv.physics.Physics, device="cpu"):
-
+    :param str dataset_name: dataset name e.g. spacenet
+    :param dinv.physics.Physics physics: physics operator for simulation
+    :param str device: torch device, defaults to "cpu"
+    :return tuple: tuple of train_dataloader, test_dataloader
+    """
     if dataset_name == "spacenet":
         transform, img_loader, is_valid_file = spacenet_transform(), spacenet_loader, spacenet_is_valid_file()
 
