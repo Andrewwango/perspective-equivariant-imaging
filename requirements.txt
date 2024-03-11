@@ -1,0 +1,6 @@
+numpy==1.26.1
+torch==2.1.0
+deepinv @ git+https://github.com/deepinv/deepinv.git@945adb155b0caceabffdd9dd958273cc7d8a940e
+onnx==1.15.0
+natsort==8.4.0
+kornia==0.7.0

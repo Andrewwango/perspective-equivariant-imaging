@@ -1,0 +1,21 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - demo.ipynb
+
+website:
+  title: "Perspective-Equivariant Imaging"
+  sidebar:
+    style: "docked"
+    contents:
+      - href: demo.ipynb
+        text: Demo
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+
+
+
