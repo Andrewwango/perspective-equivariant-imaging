@@ -184,7 +184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p><a href="https://arxiv.org/abs/%3CINDEX%3E"><img src="https://img.shields.io/badge/arXiv-%3CINDEX%3E-%3CCOLOR%3E.svg" class="img-fluid" alt="arXiv"></a> <a href="https://github.com/Andrewwango/perspective-equivariant-imaging"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&amp;logo=github&amp;logoColor=white.png" class="img-fluid" alt="GitHub"></a> <a href="https://andrewwango.github.io/perspective-equivariant-imaging">Webpage</a> | <a href="./demo.html">Notebook</a></p>
+<p><a href="https://arxiv.org/abs/%3CINDEX%3E"><img src="https://img.shields.io/badge/arXiv-%3CINDEX%3E-%3CCOLOR%3E.svg" class="img-fluid" alt="arXiv"></a> <a href="https://github.com/Andrewwango/perspective-equivariant-imaging"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&amp;logo=github&amp;logoColor=white.png" class="img-fluid" alt="GitHub"></a> <a href="https://andrewwango.github.io/perspective-equivariant-imaging">Demo webpage</a> | <a href="./demo.html">Demo notebook</a></p>
 <p><strong>Authors</strong>: Andrew Wang, Mike Davies, School of Engineering, University of Edinburgh</p>
 <p><strong>Abstract</strong>: Ill-posed image reconstruction problems appear in many scenarios such as remote sensing, where obtaining high quality images is crucial for environmental monitoring, disaster management and urban planning. Deep learning has seen great success in overcoming the limitations of traditional methods. However, these inverse problems rarely come with ground truth data, highlighting the importance of unsupervised learning from partial and noisy measurements alone. We propose <em>perspective-equivariant imaging</em> (EI), a framework that leverages perspective variability in optical camera-based imaging systems, such as satellites or handheld cameras, to recover information lost in ill-posed optical camera imaging problems. This extends previous EI work to include a much richer non-linear class of group transforms and is shown to be an excellent prior for satellite and urban image data, where perspective-EI achieves state-of-the-art results in multispectral pansharpening, outperforming other unsupervised methods in the literature.</p>
 <p><strong>Citation</strong></p>
@@ -209,7 +209,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="multispectral-pansharpening">2.1 Multispectral pansharpening</h3>
 <p>The pansharpening inverse problem seeks to recover high-resolution multispectral (HRMS) images <span class="math inline">\(x\)</span> from low-resolution multispectral (LRMS) <span class="math inline">\(\mathbf{y}_\text{MS}\)</span> and high-resolution panchromatic (single-band) <span class="math inline">\(\mathbf{y}_\text{pan}\)</span> images. The forward operator is:</p>
 <p><span class="math display">\[\left\{\mathbf{y}_\text{MS},\mathbf{y}_\text{PAN}\right\}\sim\mathcal{P}\left(\mathbf{A}_\text{PS}\mathbf{x}\right)=\left\{\mathcal{P}\left(\mathbf{A}_\text{SR}\mathbf{x}\right),\mathcal{P}\left(\mathbf{R}_\text{PAN}\mathbf{x}\right)\right\}\]</span></p>
-<p>where <span class="math inline">\(\mathbf{R}_\text{PAN}\)</span> is the pan channel’s SRF, <span class="math inline">\(\mathbf{A}_\text{SR}\mathbf{x}=(\mathbf{k} * \mathbf{x}) \downarrow_j\)</span> is the <span class="math inline">\(j\times j\)</span>-factor downsampling operator with anti-aliasing kernel <span class="math inline">\(\mathbf{k}\)</span>, and <span class="math inline">\(\mathcal{P}\)</span> is the Poisson noise operator. We simulate a tiny dataset of WorldView-2 tiles taken from <a href="https://spacenet.ai/off-nadir-building-detection/">SpaceNet-4</a>:</p>
+<p>where <span class="math inline">\(\mathbf{R}_\text{PAN}\)</span> is the pan channel’s SRF, <span class="math inline">\(\mathbf{A}_\text{SR}\mathbf{x}=(\mathbf{k} * \mathbf{x}) \downarrow_j\)</span> is the <span class="math inline">\(j\times j\)</span>-factor downsampling operator with anti-aliasing kernel <span class="math inline">\(\mathbf{k}\)</span>, and <span class="math inline">\(\mathcal{P}\)</span> is the Poisson noise operator. We simulate a tiny dataset of WorldView-2 tiles taken from <a href="https://spacenet.ai/off-nadir-building-detection/">SpaceNet-4</a> (see <a href="data/spacenet/vis/">vis</a>):</p>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dataset_name <span class="op">=</span> <span class="st">"spacenet"</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>noise_gain <span class="op">=</span> <span class="fl">0.</span></span>
@@ -225,9 +225,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>train_dataloader, test_dataloader <span class="op">=</span> make_dataloaders(dataset_name, physics, device<span class="op">=</span>device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x, y <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(test_dataloader))</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plot_multispectral(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x, y <span class="op">=</span> x.to(device), y.to(device)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>plot_multispectral(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="demo_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
 </div>
@@ -237,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="projective-transformations">2.2 Projective transformations</h3>
 <p>Camera-based imaging systems move and rotate freely in the world. In satellite imaging, scenes are generally imaged off-nadir, i.e.&nbsp;the focal line does not pass through the Earth point located vertically below, resulting in a perspective distortion.</p>
 <p>Our proposed perspective-EI uses the natural belief that unknown image sets are invariant to changes in perspective to solve these inverse problems without ground truth (GT), by considering the group of non-linear projective transformations <span class="math inline">\(\mathbf{T}_g\)</span>. Note that we <strong>do not have</strong> access to the GT images <span class="math inline">\(x\)</span>, we just show these for demonstration:</p>
-<div class="cell" data-execution_count="12">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>transform <span class="op">=</span> Homography(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    n_trans <span class="op">=</span> <span class="dv">1</span>, </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    theta_max <span class="op">=</span> <span class="dv">5</span>, <span class="co">#degrees </span></span>
@@ -259,11 +260,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="perspective-equivariant-imaging" class="level3">
 <h3 class="anchored" data-anchor-id="perspective-equivariant-imaging">2.3 Perspective-equivariant imaging</h3>
 <p>The EI framework learns to invert from measurements <span class="math inline">\(y\)</span> alone:</p>
-<p><img src="img/diag_EI.jpg" width="30%"></p>
+<p><img src="img/diag_EI.jpg" width="50%"></p>
 <p>Our proposed loss function adds perspective-EI onto a spectral and structural measurement consistency (MC) loss:</p>
 <p><span class="math display">\[\mathcal{L}_\text{unsup}(\theta;\mathbf{y},g)=\lVert\mathbf{A}f_\theta(\mathbf{y})-\mathbf{y}_\text{MS}\rVert_2^2+\lVert \mathbf{R}_\text{pan}f_\theta(\mathbf{y})-\mathbf{y}_\text{pan}\rVert_\text{TV}+\mathcal{L}_\text{EI}(\theta;\mathbf{y},g)\]</span></p>
-<p>In the noisy scenario, both the spectral and structural MC losses are replaced by SURE losses.</p>
-<div class="cell" data-execution_count="23">
+<p>In the noisy scenario, both the spectral and structural MC losses are replaced by SURE losses. We assume a flat <span class="math inline">\(\mathbf{R}_\text{pan}\)</span> that simply averages the channels.</p>
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> noise_gain <span class="op">&gt;</span> <span class="dv">0</span>:</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    loss_spectral   <span class="op">=</span> SurePoissonSpectralLoss(gain<span class="op">=</span>noise_gain, tau<span class="op">=</span><span class="fl">1e-2</span>) <span class="co">#tau from (Chen et al. 2022: Robust Equivariant Imaging, Appendix C.3)</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    loss_structural <span class="op">=</span> SurePoissonStructuralLoss(gain<span class="op">=</span>noise_gain, tau<span class="op">=</span><span class="fl">1e-2</span>, srf_from<span class="op">=</span><span class="st">"average"</span>)</span>
@@ -278,7 +279,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="training" class="level2">
 <h2 class="anchored" data-anchor-id="training">3. Training</h2>
 <p>We train with the <a href="https://ieeexplore.ieee.org/document/8237455">PanNet</a> neural network, but any NN model can be used since our method is independent of the choice of NN. We train our models using <a href="https://deepinv.github.io/">deepinv</a> which is built on PyTorch.</p>
-<div class="cell">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PanNet(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    backbone_net<span class="op">=</span>ResNet(hidden_channels<span class="op">=</span><span class="dv">32</span>, num_blocks<span class="op">=</span><span class="dv">4</span>), </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    hrms_shape<span class="op">=</span>img_shape, </span>
@@ -287,11 +288,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    device<span class="op">=</span>device,</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell">
+<div class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>optimizer, scheduler <span class="op">=</span> make_optimizer_scheduler(model, lr_init<span class="op">=</span><span class="fl">1e-3</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> dinv.train(</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    epochs<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    epochs<span class="op">=</span><span class="dv">10</span>,</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    losses<span class="op">=</span>losses,</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    physics<span class="op">=</span>physics,</span>
@@ -305,35 +306,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    img_interval<span class="op">=</span><span class="dv">99</span>,</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    freq_plot<span class="op">=</span><span class="dv">99</span>,</span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The model has 77124 trainable parameters</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Epoch 1: 100%|█| 10/10 [00:04&lt;00:00,  2.46it/s, eval_psnr=20.3, loss_mc=0.0103, loss_TVStructural=0.000693, loss_ei=0.00
+Epoch 2: 100%|█| 10/10 [00:03&lt;00:00,  2.55it/s, eval_psnr=19.2, loss_mc=0.00687, loss_TVStructural=0.000447, loss_ei=0.0
+Epoch 3: 100%|█| 10/10 [00:03&lt;00:00,  2.51it/s, eval_psnr=19.5, loss_mc=0.00644, loss_TVStructural=0.000495, loss_ei=0.0
+Epoch 4: 100%|█| 10/10 [00:03&lt;00:00,  2.53it/s, eval_psnr=21.6, loss_mc=0.00677, loss_TVStructural=0.000509, loss_ei=0.0
+Epoch 5: 100%|█| 10/10 [00:03&lt;00:00,  2.53it/s, eval_psnr=21.5, loss_mc=0.00596, loss_TVStructural=0.00043, loss_ei=0.00
+Epoch 6: 100%|█| 10/10 [00:03&lt;00:00,  2.53it/s, eval_psnr=21.2, loss_mc=0.00577, loss_TVStructural=0.000453, loss_ei=0.0
+Epoch 7: 100%|█| 10/10 [00:04&lt;00:00,  2.48it/s, eval_psnr=22.4, loss_mc=0.00519, loss_TVStructural=0.000444, loss_ei=0.0
+Epoch 8: 100%|█| 10/10 [00:04&lt;00:00,  2.50it/s, eval_psnr=22.9, loss_mc=0.00497, loss_TVStructural=0.000475, loss_ei=0.0
+Epoch 9: 100%|█| 10/10 [00:03&lt;00:00,  2.51it/s, eval_psnr=22.2, loss_mc=0.00556, loss_TVStructural=0.000422, loss_ei=0.0
+Epoch 10: 100%|█| 10/10 [00:03&lt;00:00,  2.54it/s, eval_psnr=21.1, loss_mc=0.00503, loss_TVStructural=0.000391, loss_ei=0.</code></pre>
+</div>
 </div>
 <section id="evaluation-metrics" class="level3">
 <h3 class="anchored" data-anchor-id="evaluation-metrics">3.1 Evaluation metrics</h3>
 <p>We report QNR (no reference) ERGAS, and PSNR. See <a href="https://ieeexplore.ieee.org/document/9082183">Meng et al.</a> benchmark for details.</p>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>x_hat <span class="op">=</span> model(y.to(device), physics).detach().cpu()</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>qnr <span class="op">=</span> QNR(physics, alpha<span class="op">=</span><span class="fl">1.</span>, beta<span class="op">=</span><span class="fl">1.5</span>)(x_hat, y)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchmetrics.functional.image <span class="im">import</span> error_relative_global_dimensionless_synthesis</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>ergas <span class="op">=</span> error_relative_global_dimensionless_synthesis(x_hat, x, ratio<span class="op">=</span><span class="fl">0.25</span>).item()</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>psnr <span class="op">=</span> dinv.utils.cal_psnr(x_hat, x)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"QNR: </span><span class="sc">{</span><span class="bu">round</span>(qnr, <span class="dv">3</span>)<span class="sc">}</span><span class="ss">, PSNR: </span><span class="sc">{</span><span class="bu">round</span>(psnr, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">, ERGAS: </span><span class="sc">{</span><span class="bu">round</span>(ergas, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>c:\Users\s2558406\Documents\Repos\ei-experiments\venv\Lib\site-packages\torchmetrics\utilities\prints.py:70: FutureWarning: Importing `spectral_angle_mapper` from `torchmetrics.functional` was deprecated and will be removed in 2.0. Import `spectral_angle_mapper` from `torchmetrics.image` instead.
-  _future_warning(</code></pre>
-</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>x_hat <span class="op">=</span> model(y.to(device), physics).detach()</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>qnr <span class="op">=</span> QNR(physics, alpha<span class="op">=</span><span class="fl">1.</span>, beta<span class="op">=</span><span class="fl">1.5</span>)(x_hat, y)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchmetrics.functional.image <span class="im">import</span> error_relative_global_dimensionless_synthesis</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ergas <span class="op">=</span> error_relative_global_dimensionless_synthesis(x_hat, x, ratio<span class="op">=</span><span class="fl">0.25</span>).item()</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>psnr <span class="op">=</span> dinv.utils.cal_psnr(x_hat, x)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"QNR: </span><span class="sc">{</span><span class="bu">round</span>(qnr, <span class="dv">3</span>)<span class="sc">}</span><span class="ss">, PSNR: </span><span class="sc">{</span><span class="bu">round</span>(psnr, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">, ERGAS: </span><span class="sc">{</span><span class="bu">round</span>(ergas, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>QNR: 0.005, PSNR: 6.85, ERGAS: 27.65</code></pre>
+<pre><code>QNR: 0.776, PSNR: 18.65, ERGAS: 8.34</code></pre>
 </div>
 </div>
 </section>
 </section>
 <section id="competitors" class="level2">
 <h2 class="anchored" data-anchor-id="competitors">4. Competitors</h2>
+<p>We compare our pansharpening loss with 4 unsupervised methods from the literature: the losses from <a href="https://arxiv.org/abs/2007.11766">GDD</a>, <a href="https://ieeexplore.ieee.org/document/9136909">SSQ</a>, <a href="https://ieeexplore.ieee.org/document/9745494">Z-PNN</a> and <a href="https://www.sciencedirect.com/science/article/abs/pii/S1566253520302591">PanGan</a>.</p>
+<p>To train with them, simply replace <code>losses</code> with one of the following:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co"> training options for running competitors</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> perspective_ei.multispectral.competitors <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>GDD_losses <span class="op">=</span> [</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    dinv.loss.MCLoss(metric<span class="op">=</span>LRMS_MSELoss(ratio)), </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    TVStructuralLoss(srf_from<span class="op">=</span><span class="st">"average"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>SSQ_losses <span class="op">=</span> [</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    SSQSpectralLoss(device<span class="op">=</span>device), </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    SSQStructuralLoss(srf_from<span class="op">=</span><span class="st">"average"</span>), </span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    QNRLoss()</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>ZPNN_losses <span class="op">=</span> [</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    dinv.loss.MCLoss(metric<span class="op">=</span>LRMS_L1Loss(ratio)), </span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    ZPNN_CorrelationLoss(device<span class="op">=</span>device)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>PanGan_losses <span class="op">=</span> [</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    dinv.loss.MCLoss(metric<span class="op">=</span>LRMS_MSELoss(ratio)), </span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    PanganStructuralLoss(srf_from<span class="op">=</span><span class="st">"average"</span>, device<span class="op">=</span>device),</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    PanganAdvGenLoss(srf_from<span class="op">=</span><span class="st">"average"</span>, device<span class="op">=</span>device),</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    PanganAdvDiscrimSpectralLoss(device<span class="op">=</span>device),</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    PanganAdvDiscrimStructuralLoss(srf_from<span class="op">=</span><span class="st">"average"</span>, device<span class="op">=</span>device)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>] <span class="co"># see perspective_ei.multispectral.competitors.pangan for training details</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
