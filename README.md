@@ -2,7 +2,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-<INDEX>-<COLOR>.svg)](https://arxiv.org/abs/<INDEX>)
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Andrewwango/perspective-equivariant-imaging)
-[Webpage](https://andrewwango.github.io/perspective-equivariant-imaging) | [Notebook](demo.ipynb)
+[Demo webpage](https://andrewwango.github.io/perspective-equivariant-imaging) | [Demo notebook](demo.ipynb)
 
 **Authors**: Andrew Wang, Mike Davies, School of Engineering, University of Edinburgh
 
