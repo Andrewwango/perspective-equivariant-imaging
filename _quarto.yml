@@ -6,16 +6,13 @@ project:
 
 website:
   title: "Perspective-Equivariant Imaging"
-  sidebar:
-    style: "docked"
-    contents:
-      - href: demo.ipynb
-        text: Demo
+
 
 format:
   html:
     theme: cosmo
     toc: true
+    toc-expand: true
 
 
 
