@@ -91,8 +91,15 @@ class Homography(torch.nn.Module):
     """
     Homography (or projective transformation). The homography is parameterised by 
     geometric parameters. By fixing these parameters, subgroup transformations are
-    retrieved. For example, setting x_stretch_factor_min = y_stretch_factor_min =
-    zoom_factor_min = 1, theta_max = theta_z_max = skew_max = 0 gives a pure shift.
+    retrieved, see Wang et al. "Perspective-Equivariant Imaging: an Unsupervised
+    Framework for Multispectral Pansharpening" https://arxiv.org/abs/2403.09327
+
+    For example, setting x_stretch_factor_min = y_stretch_factor_min = zoom_factor_min = 1,
+    theta_max = theta_z_max = skew_max = 0 gives a pure translation.
+
+    Subgroup transformations include `deepinv.transform.Affine`, `deepinv.transform.Similarity`,
+    `deepinv.transform.Euclidean` along with the basic `deepinv.transform.Shift`, 
+    `deepinv.transform.Rotation` and semigroup `deepinv.transform.Scale`.
 
     Transformations with perspective effects (i.e. pan+tilt) are recovered by setting
     theta_max > 0.
@@ -107,6 +114,8 @@ class Homography(torch.nn.Module):
     :param float skew_max: Maximum skew parameter, defaults to 50.
     :param float x_stretch_factor_min: Min stretch factor along the x-axis (up to 1), defaults to 0.5.
     :param float y_stretch_factor_min: Min stretch factor along the y-axis (up to 1), defaults to 0.5.
+    :param str padding: kornia padding mode, defaults to "reflection"
+    :param str interpolation: kornia interpolation mode, defaults to "bilinear"
     :param str device: torch device, defaults to "cpu".
     """
     n_trans: int = 1
@@ -117,6 +126,8 @@ class Homography(torch.nn.Module):
     skew_max: float = 50.
     x_stretch_factor_min: float = 0.5
     y_stretch_factor_min: float = 0.5
+    padding: str = "reflection"
+    interpolation: str = "bilinear"
     device: str = "cpu"
 
     def __post_init__(self, *args, **kwargs):
@@ -139,6 +150,8 @@ class Homography(torch.nn.Module):
                 skew=sk,
                 x_stretch_factor=xsf,
                 y_stretch_factor=ysf,
+                padding=self.padding,
+                interpolation=self.interpolation,
                 device=self.device
             ) for tx, ty, tz, zf, xt, yt, sk, xsf, ysf in zip(
                 self.rand(self.theta_max),
@@ -151,3 +164,52 @@ class Homography(torch.nn.Module):
                 self.rand(1, self.x_stretch_factor_min),
                 self.rand(1, self.y_stretch_factor_min),
         )], dim=0).float()
+
+
+class Affine(Homography):
+    """
+    Special case of homography which corresponds to the actions of the affine subgroup
+    Aff(3). Affine transformations include translations, rotations, reflections,
+    skews, and stretches. See `deepinv.transform.Homography` for more details. 
+    """
+    def forward(self, data):
+        self.theta_max = 0
+        return super().forward(data)
+
+class Similarity(Homography):
+    """
+    Special case of homography which corresponds to the actions of the similarity subgroup
+    S(2). Similarity transformations include translations, rotations, reflections and 
+    uniform scale. See `deepinv.transform.Homography` for more details. 
+    """
+    def forward(self, data):
+        self.theta_max = self.skew_max = 0
+        self.x_stretch_factor_min = self.y_stretch_factor_min = 1
+        return super().forward(data)
+
+class Euclidean(Homography):
+    """
+    Special case of homography which corresponds to the actions of the Euclidean subgroup
+    E(2). Euclidean transformations include translations, rotations and reflections.
+    See `deepinv.transform.Homography` for more details. 
+    """
+    def forward(self, data):
+        self.theta_max = self.skew_max = 0
+        self.zoom_factor_min = self.x_stretch_factor_min = self.y_stretch_factor_min = 1
+        return super().forward(data)
+
+class PanTiltRotate(Homography):
+    """
+    Special case of homography which corresponds to the actions of the 3D camera rotation,
+    or "pan+tilt+rotate" subgroup from Wang et al. "Perspective-Equivariant Imaging: an 
+    Unsupervised Framework for Multispectral Pansharpening" https://arxiv.org/abs/2403.09327
+
+    The transformations simulate panning, tilting or rotating the camera, leading to a 
+    "perspective" effect. The subgroup is isomorphic to SO(3).
+
+    See `deepinv.transform.Homography` for more details. 
+    """
+    def forward(self, data):
+        self.shift_max = self.skew_max = 0
+        self.zoom_factor_min = self.x_stretch_factor_min = self.y_stretch_factor_min = 1
+        return super().forward(data)

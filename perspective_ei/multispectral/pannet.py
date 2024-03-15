@@ -2,7 +2,7 @@ from kornia.filters.kernels import get_box_kernel2d
 import deepinv as dinv
 import torch
 import torch.nn as nn
-from . import MultispectralUtils
+from .utils import MultispectralUtils
 
 class ResNet(nn.Module):
     """Simple implementation of ResNet with ReLU activation

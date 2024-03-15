@@ -2,7 +2,7 @@ from math import ceil
 import torch.nn as nn
 import torch
 from deepinv.physics.blur import Blur, gaussian_blur
-from .. import MultispectralUtils, Pansharpen
+from ..utils import MultispectralUtils, Pansharpen
 
 class ZPNN_CorrelationLoss(nn.Module, MultispectralUtils):
     """Z-PNN structural loss from Ciotola et al. 

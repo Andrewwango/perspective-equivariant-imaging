@@ -2,9 +2,9 @@ import torch
 from torch import Tensor
 import deepinv as dinv
 
-from .. import QNR, Pansharpen, MultispectralUtils
+from ..utils import Pansharpen, MultispectralUtils
 from ..loss import BaseStructuralLoss
-from ..qnr import cal_ssim
+from ..qnr import cal_ssim, QNR
 
 class SSQBase:
     """Base class for reimplementation of SSQ loss calculations, from Luo et al. 

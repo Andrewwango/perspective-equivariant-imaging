@@ -5,7 +5,7 @@ from torch import Tensor
 import torch.nn as nn
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
-from .. import Pansharpen, MultispectralUtils
+from ..utils import Pansharpen, MultispectralUtils
 from ..loss import BaseStructuralLoss
 
 class PanganDiscriminator(nn.Module):

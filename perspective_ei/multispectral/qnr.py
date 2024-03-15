@@ -5,7 +5,7 @@ import deepinv as dinv
 from kornia.color import rgb_to_ycbcr
 from torchmetrics.functional import structural_similarity_index_measure
 
-from . import MultispectralUtils
+from .utils import MultispectralUtils
 from .pansharpen import Pansharpen
 
 def cal_ssim(x_hat: Tensor, x: Tensor, y_channel: bool = False, **kwargs):

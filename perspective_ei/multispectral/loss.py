@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-from . import MultispectralUtils
+from .utils import MultispectralUtils
 
 class LRMS_MSELoss(nn.MSELoss, MultispectralUtils):
     """MSELoss on the LRMS image in the volume y"""

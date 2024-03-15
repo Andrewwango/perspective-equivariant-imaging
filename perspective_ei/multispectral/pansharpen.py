@@ -1,6 +1,6 @@
 import deepinv as dinv
 from torch import Tensor
-from . import MultispectralUtils
+from .utils import MultispectralUtils
 
 class Pansharpen(dinv.physics.Downsampling, MultispectralUtils):
     """Multispectral pansharpening operator. The forward physics decimates a 
