@@ -1,6 +1,6 @@
 # Perspective-Equivariant Imaging: an Unsupervised Framework for Multispectral Pansharpening
 
-[![arXiv](https://img.shields.io/badge/arXiv-<INDEX>-<COLOR>.svg)](https://arxiv.org/abs/<INDEX>)
+[![arXiv](https://img.shields.io/badge/arXiv-2403.09327-green.svg)](https://arxiv.org/abs/2403.09327)
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Andrewwango/perspective-equivariant-imaging)
 [Demo webpage](https://andrewwango.github.io/perspective-equivariant-imaging) | [Demo notebook](demo.ipynb)
 
@@ -14,7 +14,7 @@
   title={Perspective-Equivariant Imaging: an Unsupervised Framework for Multispectral Pansharpening},
   author={Wang, Andrew and Davies, Mike},
   year={2024},
-  url={https://arxiv.org/abs/<INDEX>}
+  url={https://arxiv.org/abs/2403.09327}
 }
 ```
 
