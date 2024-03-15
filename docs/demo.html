@@ -122,6 +122,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#evaluation-metrics" id="toc-evaluation-metrics" class="nav-link" data-scroll-target="#evaluation-metrics">3.1 Evaluation metrics</a></li>
   </ul></li>
   <li><a href="#competitors" id="toc-competitors" class="nav-link" data-scroll-target="#competitors">4. Competitors</a></li>
+  <li><a href="#appendix-subgroup-transforms" id="toc-appendix-subgroup-transforms" class="nav-link" data-scroll-target="#appendix-subgroup-transforms">Appendix: subgroup transforms</a></li>
   </ul>
 </nav>
     </div>
@@ -333,6 +334,32 @@ Epoch 10: 100%|█| 10/10 [00:03&lt;00:00,  2.54it/s, eval_psnr=21.1, loss_mc=0.
 <span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    PanganAdvDiscrimSpectralLoss(device<span class="op">=</span>device),</span>
 <span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    PanganAdvDiscrimStructuralLoss(srf_from<span class="op">=</span><span class="st">"average"</span>, device<span class="op">=</span>device)</span>
 <span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>] <span class="co"># see perspective_ei.multispectral.competitors.pangan for training details</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="appendix-subgroup-transforms" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-subgroup-transforms">Appendix: subgroup transforms</h2>
+<p>Transformations associated with subgroups of the homography, or projective transformation, can be recovered by fixing certain geometric parameters in <code>Homography</code> (see Theorem 1, Table 1 in the paper). Here are examples associated with the following subgroups:</p>
+<ul>
+<li>Euclidean group <span class="math inline">\(\mathbb{E}(2)\)</span>, which includes rotations (<code>dinv.transform.Rotate</code>), translations (<code>dinv.transform.Shift</code>) and reflections.</li>
+<li>Similarity group <span class="math inline">\(\text{S}(2)\)</span>, which also includes scalings (<code>dinv.transform.Scale</code>).</li>
+<li>Affine group <span class="math inline">\(\text{Aff}(3)\)</span>, which also includes skew and stretch.</li>
+<li>Pan+tilt+rotate group, which is isomorphic to 3D rotation <span class="math inline">\(\text{SO}(3)\)</span> and includes pan, tilt and rotation, which contribute to a “perspective” effect.</li>
+</ul>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>x_sample <span class="op">=</span> PIL2tensor(<span class="st">"img/celeba_example.jpg"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>dinv.utils.plot([</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    x_sample,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    Euclidean()(x_sample),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    Similarity()(x_sample),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    Affine()(x_sample),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    PanTiltRotate(theta_max<span class="op">=</span><span class="dv">5</span>)(x_sample)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>], titles<span class="op">=</span>[</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Original"</span>, <span class="st">"Euclidean"</span>, <span class="st">"Similarity"</span>, <span class="st">"Affine"</span>, <span class="st">"Pan+tilt+rotate"</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="demo_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
+</div>
 </div>
 
 

@@ -33,5 +33,12 @@
     "title": "Perspective-Equivariant Imaging: an Unsupervised Framework for Multispectral Pansharpening",
     "section": "4. Competitors",
     "text": "4. Competitors\nWe compare our pansharpening loss with 4 unsupervised methods from the literature: the losses from GDD, SSQ, Z-PNN and PanGan.\nTo train with them, simply replace losses with one of the following:\n\nfrom perspective_ei.multispectral.competitors import *\n\nGDD_losses = [\n    dinv.loss.MCLoss(metric=LRMS_MSELoss(ratio)), \n    TVStructuralLoss(srf_from=\"average\")\n]\n\nSSQ_losses = [\n    SSQSpectralLoss(device=device), \n    SSQStructuralLoss(srf_from=\"average\"), \n    QNRLoss()\n]\n\nZPNN_losses = [\n    dinv.loss.MCLoss(metric=LRMS_L1Loss(ratio)), \n    ZPNN_CorrelationLoss(device=device)\n]\n\nPanGan_losses = [\n    dinv.loss.MCLoss(metric=LRMS_MSELoss(ratio)), \n    PanganStructuralLoss(srf_from=\"average\", device=device),\n    PanganAdvGenLoss(srf_from=\"average\", device=device),\n    PanganAdvDiscrimSpectralLoss(device=device),\n    PanganAdvDiscrimStructuralLoss(srf_from=\"average\", device=device)\n] # see perspective_ei.multispectral.competitors.pangan for training details"
+  },
+  {
+    "objectID": "demo.html#appendix-subgroup-transforms",
+    "href": "demo.html#appendix-subgroup-transforms",
+    "title": "Perspective-Equivariant Imaging: an Unsupervised Framework for Multispectral Pansharpening",
+    "section": "Appendix: subgroup transforms",
+    "text": "Appendix: subgroup transforms\nTransformations associated with subgroups of the homography, or projective transformation, can be recovered by fixing certain geometric parameters in Homography (see Theorem 1, Table 1 in the paper). Here are examples associated with the following subgroups:\n\nEuclidean group \\(\\mathbb{E}(2)\\), which includes rotations (dinv.transform.Rotate), translations (dinv.transform.Shift) and reflections.\nSimilarity group \\(\\text{S}(2)\\), which also includes scalings (dinv.transform.Scale).\nAffine group \\(\\text{Aff}(3)\\), which also includes skew and stretch.\nPan+tilt+rotate group, which is isomorphic to 3D rotation \\(\\text{SO}(3)\\) and includes pan, tilt and rotation, which contribute to a “perspective” effect.\n\n\nx_sample = PIL2tensor(\"img/celeba_example.jpg\")\n\ndinv.utils.plot([\n    x_sample,\n    Euclidean()(x_sample),\n    Similarity()(x_sample),\n    Affine()(x_sample),\n    PanTiltRotate(theta_max=5)(x_sample)\n], titles=[\n    \"Original\", \"Euclidean\", \"Similarity\", \"Affine\", \"Pan+tilt+rotate\"\n])"
   }
 ]
