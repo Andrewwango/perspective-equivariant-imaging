@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 from .utils import MultispectralUtils
 
+
 class ResNet(nn.Module):
     """Simple implementation of ResNet with ReLU activation
 
@@ -12,22 +13,41 @@ class ResNet(nn.Module):
     :param bool batch_norm: whether to add batchnorm layers, defaults to True
     :param bool relu_before_addition: perform activation before residual addition, defaults to False
     """
-    def __init__(self, hidden_channels: int = 32, num_blocks: int = 4, batch_norm: bool = True, relu_before_addition = False):
+
+    def __init__(
+        self,
+        hidden_channels: int = 32,
+        num_blocks: int = 4,
+        batch_norm: bool = True,
+        relu_before_addition=False,
+    ):
         super().__init__()
         self.batch_norm = batch_norm
         self.relu_before_addition = relu_before_addition
-        self.blocks = nn.ModuleList([
-            self._make_block(hidden_channels) for _ in range(num_blocks)
-        ])
+        self.blocks = nn.ModuleList(
+            [self._make_block(hidden_channels) for _ in range(num_blocks)]
+        )
 
     def _make_block(self, hidden_channels):
         return nn.Sequential(
-            nn.Conv2d(in_channels=hidden_channels, out_channels=hidden_channels, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(
+                in_channels=hidden_channels,
+                out_channels=hidden_channels,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
             nn.BatchNorm2d(hidden_channels) if self.batch_norm else nn.Identity(),
             nn.ReLU(),
-            nn.Conv2d(in_channels=hidden_channels, out_channels=hidden_channels, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(
+                in_channels=hidden_channels,
+                out_channels=hidden_channels,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
             nn.BatchNorm2d(hidden_channels) if self.batch_norm else nn.Identity(),
-            nn.ReLU() if self.relu_before_addition else nn.Identity()
+            nn.ReLU() if self.relu_before_addition else nn.Identity(),
         )
 
     def forward(self, x):
@@ -35,6 +55,7 @@ class ResNet(nn.Module):
             x = x + block(x)
             x = nn.ReLU()(x) if not self.relu_before_addition else x
         return x
+
 
 class PanNet(nn.Module, MultispectralUtils):
     """PanNet neural network from Yang et al. PanNet: A Deep Network Architecture for Pan-Sharpening, ICCV 2017.
@@ -47,35 +68,50 @@ class PanNet(nn.Module, MultispectralUtils):
     :param int highpass_kernel_size: square kernel size for extracting high-frequency features, defaults to 5
     :param str device: torch device, defaults to "cpu"
     """
+
     def __init__(
-            self, 
-            backbone_net: nn.Module, 
-            hrms_shape: tuple = (4,900,900), 
-            scale_factor: int = 4, 
-            highpass_kernel_size: int = 5, 
-            device="cpu", 
-            **kwargs):
-        
+        self,
+        backbone_net: nn.Module,
+        hrms_shape: tuple = (4, 900, 900),
+        scale_factor: int = 4,
+        highpass_kernel_size: int = 5,
+        device="cpu",
+        **kwargs
+    ):
         super().__init__()
         self.scale_factor = scale_factor
         self.hrms_shape = hrms_shape
         self.device = device
         self.upsampler = self.create_sampler("up", self.hrms_shape)
-        
+
         self.boxblur = dinv.physics.Blur(
             filter=get_box_kernel2d(highpass_kernel_size, device=device).unsqueeze(0),
             padding="reflect",
-            device=device
+            device=device,
         ).A
 
         self.net = nn.Sequential(
-            nn.Conv2d(in_channels=hrms_shape[0] + 1, out_channels=32, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(
+                in_channels=hrms_shape[0] + 1,
+                out_channels=32,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
             nn.ReLU(),
             backbone_net,
-            nn.Conv2d(in_channels=32, out_channels=hrms_shape[0], kernel_size=3, stride=1, padding=1)
+            nn.Conv2d(
+                in_channels=32,
+                out_channels=hrms_shape[0],
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
         )
 
-    def create_sampler(self, direction: str, hr_shape: tuple, noise_gain: float = 0.) -> dinv.physics.Physics:
+    def create_sampler(
+        self, direction: str, hr_shape: tuple, noise_gain: float = 0.0
+    ) -> dinv.physics.Physics:
         """Helper function for downsampling/upsampling images (useful for reduced-resolution training with Wald's protocol).
 
         :param str direction: down or up
@@ -88,28 +124,28 @@ class PanNet(nn.Module, MultispectralUtils):
             factor=self.scale_factor,
             filter="bicubic",
             device=self.device,
-            )
-        
-        if noise_gain > 0:
-            sampler.noise_model = dinv.physics.PoissonNoise(gain=noise_gain, clip_positive=True)
-        
-        return sampler if direction == "down" else sampler.A_adjoint
-        
+        )
 
-    def highpass(self, x): # high-pass with box filter as per Yang et al.
-        return x - self.boxblur(x) #kornia.filters.BoxBlur((5, 5))(x)
+        if noise_gain > 0:
+            sampler.noise_model = dinv.physics.PoissonNoise(
+                gain=noise_gain, clip_positive=True
+            )
+
+        return sampler if direction == "down" else sampler.A_adjoint
+
+    def highpass(self, x):  # high-pass with box filter as per Yang et al.
+        return x - self.boxblur(x)  # kornia.filters.BoxBlur((5, 5))(x)
 
     def forward(self, y, *args, **kwargs):
         lr, pan = self.lrms_from_volume(y), self.pan_from_volume(y)
-        
+
         lr_highpass = self.highpass(lr)
         pan_highpass = self.highpass(pan)
 
-        lr_highpass_up = self.upsampler(lr_highpass) # note fixed upsampler
+        lr_highpass_up = self.upsampler(lr_highpass)  # note fixed upsampler
 
         ms = torch.cat([pan_highpass, lr_highpass_up], dim=1)
 
         output = self.net(ms) + self.upsampler(lr)
 
         return self.hrms_pan_to_volume(output, pan)
-    
